@@ -20,8 +20,7 @@ class Employee extends Model implements HasMedia
     {
         return LogOptions::defaults()
             ->logOnly(['name_ar', 'phone', 'position', 'status', 'basic_salary'])
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->logOnlyDirty();
     }
 
     protected $guarded = ['id'];

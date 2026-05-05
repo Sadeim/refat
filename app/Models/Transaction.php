@@ -20,8 +20,7 @@ class Transaction extends Model implements HasMedia
     {
         return LogOptions::defaults()
             ->logFillable()
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->logOnlyDirty();
     }
 
     public const TYPES = [

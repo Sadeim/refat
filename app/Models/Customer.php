@@ -21,8 +21,7 @@ class Customer extends Model implements HasMedia
     {
         return LogOptions::defaults()
             ->logOnly(['name_ar', 'phone', 'type', 'status', 'contract_value', 'contract_end'])
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->logOnlyDirty();
     }
 
     protected $guarded = ['id'];

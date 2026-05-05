@@ -19,8 +19,7 @@ class Custody extends Model implements HasMedia
     {
         return LogOptions::defaults()
             ->logOnly(['asset_name', 'asset_type', 'status', 'assigned_to_type', 'assigned_to_id', 'returned_at'])
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->logOnlyDirty();
     }
 
     public const ASSET_TYPES = [
