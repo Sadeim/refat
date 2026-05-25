@@ -71,4 +71,14 @@ class Employee extends Model implements HasMedia
     {
         return $this->name_ar ?: ($this->name_en ?: $this->code);
     }
+
+    public function attendances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function wagePayments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WagePayment::class);
+    }
 }
