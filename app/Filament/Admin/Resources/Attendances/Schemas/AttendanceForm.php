@@ -41,8 +41,16 @@ class AttendanceForm
             ]),
 
             Section::make('الساعات والمبالغ')->columns(3)->schema([
-                TimePicker::make('check_in')->label('وقت الدخول')->seconds(false),
-                TimePicker::make('check_out')->label('وقت الخروج')->seconds(false),
+                TimePicker::make('check_in')->label('وقت الدخول')->seconds(false)
+                    ->live(debounce: 400)
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        self::recalc($get, $set);
+                    }),
+                TimePicker::make('check_out')->label('وقت الخروج')->seconds(false)
+                    ->live(debounce: 400)
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        self::recalc($get, $set);
+                    }),
                 TextInput::make('hours')->label('عدد ساعات الدوام')
                     ->numeric()->step(0.25)->default(0)
                     ->suffix('ساعة')
@@ -77,5 +85,37 @@ class AttendanceForm
                 Textarea::make('notes')->label('ملاحظات إضافية')->rows(2)->columnSpanFull(),
             ]),
         ]);
+    }
+
+    /**
+     * Recalculates `hours` from check_in/check_out, and updates `daily_total`.
+     * Handles overnight shifts (when check_out < check_in, adds 24h).
+     */
+    protected static function recalc(callable $get, callable $set): void
+    {
+        $in  = $get('check_in');
+        $out = $get('check_out');
+
+        if (!$in || !$out) {
+            return;
+        }
+
+        try {
+            $start = \Carbon\Carbon::parse($in);
+            $end   = \Carbon\Carbon::parse($out);
+
+            // إذا الخروج في اليوم التالي (وردية ليلية)
+            if ($end->lessThan($start)) {
+                $end->addDay();
+            }
+
+            $hours = round($end->floatDiffInHours($start), 2);
+            $set('hours', $hours);
+
+            $rate = (float) ($get('hourly_rate') ?? 0);
+            $set('daily_total', round($hours * $rate, 2));
+        } catch (\Exception $e) {
+            // تجاهل أي قيمة وقت غير صالحة
+        }
     }
 }
