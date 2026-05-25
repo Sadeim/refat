@@ -23,7 +23,7 @@ class WagesRelationManager extends RelationManager
 
     protected static ?string $title = 'تقرير الأجور الشهرية';
 
-    protected static ?string $icon = 'heroicon-o-banknotes';
+    protected static string|\BackedEnum|null $icon = 'heroicon-o-banknotes';
 
     public function form(Schema $schema): Schema
     {
