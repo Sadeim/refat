@@ -43,8 +43,9 @@ class Custody extends Model implements HasMedia
     {
         static::creating(function (Custody $custody) {
             if (empty($custody->reference_no)) {
-                $next = static::count() + 1;
-                $custody->reference_no = 'CUS-'.str_pad((string) $next, 5, '0', STR_PAD_LEFT);
+                $lastRef = static::withTrashed()->where('reference_no', 'like', 'CTD-%')->orderByRaw('CAST(SUBSTR(reference_no, 5) AS INTEGER) DESC')->value('reference_no');
+                $nextNumber = $lastRef ? ((int) substr($lastRef, 4)) + 1 : 1;
+                $custody->reference_no = 'CTD-'.str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
             }
         });
     }

@@ -39,7 +39,9 @@ class Customer extends Model implements HasMedia
                 $customer->qr_token = (string) Str::uuid();
             }
             if (empty($customer->code)) {
-                $customer->code = 'CUS-'.str_pad((string) (static::max('id') + 1), 5, '0', STR_PAD_LEFT);
+                $lastCode = static::withTrashed()->where('code', 'like', 'CUS-%')->orderByRaw('CAST(SUBSTR(code, 5) AS INTEGER) DESC')->value('code');
+                $nextNumber = $lastCode ? ((int) substr($lastCode, 4)) + 1 : 1;
+                $customer->code = 'CUS-'.str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
             }
         });
     }

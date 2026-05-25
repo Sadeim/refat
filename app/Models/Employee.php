@@ -42,7 +42,9 @@ class Employee extends Model implements HasMedia
                 $employee->qr_token = (string) Str::uuid();
             }
             if (empty($employee->code)) {
-                $employee->code = 'EMP-'.str_pad((string) (static::max('id') + 1), 5, '0', STR_PAD_LEFT);
+                $lastCode = static::withTrashed()->where('code', 'like', 'EMP-%')->orderByRaw('CAST(SUBSTR(code, 5) AS INTEGER) DESC')->value('code');
+                $nextNumber = $lastCode ? ((int) substr($lastCode, 4)) + 1 : 1;
+                $employee->code = 'EMP-'.str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
             }
         });
     }
