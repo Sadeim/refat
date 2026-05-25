@@ -29,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
             'incoming_letter' => \App\Models\IncomingLetter::class,
             'outgoing_letter' => \App\Models\OutgoingLetter::class,
             'custody' => \App\Models\Custody::class,
+            'vehicle' => \App\Models\Vehicle::class,
+            'vehicle_trip' => \App\Models\VehicleTrip::class,
         ]);
 
         FilamentView::registerRenderHook(

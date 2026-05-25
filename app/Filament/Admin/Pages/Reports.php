@@ -8,6 +8,7 @@ use App\Exports\EmployeesExport;
 use App\Exports\LettersExport;
 use App\Exports\SalariesExport;
 use App\Exports\TransactionsExport;
+use App\Exports\VehicleTripsExport;
 use App\Models\Customer;
 use App\Models\Custody;
 use App\Models\Employee;
@@ -90,6 +91,11 @@ class Reports extends Page
                     ['title' => 'العهد المُستردَّة', 'desc' => 'العهد التي تم استرجاعها', 'method' => 'exportCustodiesReturned', 'format' => 'Excel', 'icon' => 'heroicon-o-arrow-uturn-left'],
                 ],
 
+                'المركبات' => [
+                    ['title' => 'سجل الحركات — جميع', 'desc' => 'كل رحلات كل السيارات', 'method' => 'exportTripsAll', 'format' => 'Excel', 'icon' => 'heroicon-o-map'],
+                    ['title' => 'سجل الحركات — الشهر', 'desc' => 'رحلات الشهر الحالي', 'method' => 'exportTripsMonth', 'format' => 'Excel', 'icon' => 'heroicon-o-calendar'],
+                ],
+
                 'الرواتب' => [
                     ['title' => 'رواتب الشهر الحالي', 'desc' => 'رواتب '.now()->translatedFormat('F Y'), 'method' => 'exportSalariesCurrent', 'format' => 'Excel', 'icon' => 'heroicon-o-banknotes'],
                     ['title' => 'رواتب الشهر الماضي', 'desc' => 'رواتب '.now()->subMonth()->translatedFormat('F Y'), 'method' => 'exportSalariesLast', 'format' => 'Excel', 'icon' => 'heroicon-o-clock'],
@@ -138,4 +144,7 @@ class Reports extends Page
     {
         return redirect()->route('reports.financial-word');
     }
+
+    public function exportTripsAll()   { return Excel::download(new VehicleTripsExport, 'vehicle-trips-all-'.now()->format('Y-m-d').'.xlsx'); }
+    public function exportTripsMonth() { return Excel::download(new VehicleTripsExport(null, now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')), 'vehicle-trips-'.now()->format('Y-m').'.xlsx'); }
 }
