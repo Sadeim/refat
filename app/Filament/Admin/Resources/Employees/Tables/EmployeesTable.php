@@ -41,6 +41,18 @@ class EmployeesTable
                     ->label('القسم')
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('work_location')
+                    ->label('مكان العمل')
+                    ->formatStateUsing(fn (?string $state) => \App\Models\Lookup::label('work_location', $state, $state))
+                    ->toggleable(),
+                TextColumn::make('job_nature')
+                    ->label('طبيعة العمل')
+                    ->formatStateUsing(fn (?string $state) => \App\Models\Lookup::label('job_nature', $state, $state))
+                    ->toggleable(),
+                TextColumn::make('hourly_rate')
+                    ->label('سعر الساعة')
+                    ->money('ILS')
+                    ->toggleable(),
                 TextColumn::make('phone')
                     ->label('الهاتف')
                     ->searchable(),
@@ -86,6 +98,12 @@ class EmployeesTable
                     ]),
                 SelectFilter::make('department')
                     ->label('القسم'),
+                SelectFilter::make('work_location')
+                    ->label('مكان العمل')
+                    ->options(fn () => \App\Models\Lookup::options('work_location')),
+                SelectFilter::make('job_nature')
+                    ->label('طبيعة العمل')
+                    ->options(fn () => \App\Models\Lookup::options('job_nature')),
                 TrashedFilter::make()->label('المحذوفون'),
             ])
             ->recordActions([

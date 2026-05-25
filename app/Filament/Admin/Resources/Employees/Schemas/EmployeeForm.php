@@ -62,6 +62,28 @@ class EmployeeForm
                             ->label('المسمى الوظيفي'),
                         TextInput::make('department')
                             ->label('القسم'),
+                        Select::make('work_location')
+                            ->label('مكان العمل')
+                            ->options(fn () => \App\Models\Lookup::options('work_location'))
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
+                                TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                            ])
+                            ->createOptionUsing(fn (array $data) => tap($data['key'], fn () => \App\Models\Lookup::create([
+                                'type' => 'work_location', 'key' => $data['key'], 'label_ar' => $data['label_ar'], 'is_active' => true,
+                            ]))),
+                        Select::make('job_nature')
+                            ->label('طبيعة العمل')
+                            ->options(fn () => \App\Models\Lookup::options('job_nature'))
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
+                                TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                            ])
+                            ->createOptionUsing(fn (array $data) => tap($data['key'], fn () => \App\Models\Lookup::create([
+                                'type' => 'job_nature', 'key' => $data['key'], 'label_ar' => $data['label_ar'], 'is_active' => true,
+                            ]))),
                         DatePicker::make('start_date')
                             ->label('تاريخ بدء العمل')
                             ->native(false),
@@ -112,6 +134,12 @@ class EmployeeForm
                             ->numeric()
                             ->prefix('₪')
                             ->default(0),
+                        TextInput::make('hourly_rate')
+                            ->label('سعر ساعة العمل')
+                            ->numeric()
+                            ->prefix('₪')
+                            ->default(0)
+                            ->helperText('إذا الموظف بأجر ساعة، أدخل السعر هنا'),
                     ]),
 
                 Section::make('المرفقات والملاحظات')

@@ -4,6 +4,8 @@ namespace App\Filament\Admin\Resources\Attendances\Schemas;
 
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Lookup;
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,17 +19,62 @@ class AttendanceForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('بيانات الحضور')->columns(2)->schema([
-                Select::make('employee_id')->label('الموظف')->options(Employee::pluck('name_ar', 'id'))->searchable()->required(),
+            Section::make('بيانات الموظف والتاريخ')->columns(2)->schema([
+                Select::make('employee_id')->label('الموظف')
+                    ->options(Employee::pluck('name_ar', 'id'))
+                    ->searchable()->required()->live()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state && ($emp = Employee::find($state))) {
+                            $set('hourly_rate', $emp->hourly_rate ?? 0);
+                            $set('work_location', $emp->work_location);
+                        }
+                    }),
                 DatePicker::make('date')->label('التاريخ')->required()->native(false)->default(now()),
+                Select::make('period')->label('الفترة')
+                    ->options(Attendance::PERIODS)
+                    ->default('morning'),
+                Select::make('status')->label('حالة الدوام')
+                    ->options(Attendance::STATUSES)
+                    ->default('present')
+                    ->required()
+                    ->live(),
+            ]),
+
+            Section::make('الساعات والمبالغ')->columns(3)->schema([
                 TimePicker::make('check_in')->label('وقت الدخول')->seconds(false),
                 TimePicker::make('check_out')->label('وقت الخروج')->seconds(false),
-                TextInput::make('hours')->label('عدد الساعات')->numeric()->default(0)->step(0.25),
-                Select::make('status')->label('الحالة')->options(Attendance::STATUSES)->default('present')->required(),
-                Select::make('check_in_method')->label('طريقة التسجيل')->options([
-                    'manual' => 'يدوي', 'qr' => 'QR Code', 'fingerprint' => 'بصمة',
-                ])->default('manual'),
-                Textarea::make('notes')->label('ملاحظات')->columnSpanFull(),
+                TextInput::make('hours')->label('عدد ساعات الدوام')
+                    ->numeric()->step(0.25)->default(0)
+                    ->suffix('ساعة')
+                    ->live(debounce: 400)
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        $rate = (float) ($get('hourly_rate') ?? 0);
+                        $set('daily_total', round(((float) $state) * $rate, 2));
+                    }),
+                TextInput::make('hourly_rate')->label('سعر الساعة')
+                    ->numeric()->prefix('₪')->default(0)
+                    ->live(debounce: 400)
+                    ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                        $hrs = (float) ($get('hours') ?? 0);
+                        $set('daily_total', round($hrs * ((float) $state), 2));
+                    }),
+                TextInput::make('daily_total')->label('الإجمالي اليومي')
+                    ->numeric()->prefix('₪')->default(0)
+                    ->disabled()->dehydrated(),
+                Select::make('work_location')->label('مكان العمل')
+                    ->options(fn () => Lookup::options('work_location'))
+                    ->searchable(),
+                Select::make('check_in_method')->label('طريقة التسجيل')
+                    ->options(['manual'=>'يدوي', 'qr'=>'QR Code', 'fingerprint'=>'بصمة'])
+                    ->default('manual'),
+            ]),
+
+            Section::make('ملاحظات وتوقيع المشرف')->columns(2)->schema([
+                Textarea::make('supervisor_notes')->label('ملاحظات المشرف')->rows(2),
+                Select::make('supervisor_id')->label('المشرف الموقّع')
+                    ->options(User::pluck('name', 'id'))
+                    ->searchable(),
+                Textarea::make('notes')->label('ملاحظات إضافية')->rows(2)->columnSpanFull(),
             ]),
         ]);
     }

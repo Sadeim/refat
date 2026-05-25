@@ -64,6 +64,22 @@ class LookupSeeder extends Seeder
                 ['key' => 'equipment_rent',   'label_ar' => 'تأجير معدات'],
                 ['key' => 'other',            'label_ar' => 'أخرى'],
             ],
+
+            'work_location' => [
+                ['key' => 'mall_aljundi',     'label_ar' => 'مول الجندي'],
+                ['key' => 'office',           'label_ar' => 'المكتب الرئيسي'],
+                ['key' => 'other',            'label_ar' => 'أخرى'],
+            ],
+
+            'job_nature' => [
+                ['key' => 'security',         'label_ar' => 'أمن'],
+                ['key' => 'cleaning',         'label_ar' => 'نظافة'],
+                ['key' => 'admin',            'label_ar' => 'إداري'],
+                ['key' => 'maintenance',      'label_ar' => 'صيانة'],
+                ['key' => 'driver',           'label_ar' => 'سائق'],
+                ['key' => 'supervisor',       'label_ar' => 'مشرف'],
+                ['key' => 'other',            'label_ar' => 'أخرى'],
+            ],
         ];
 
         foreach ($data as $type => $items) {

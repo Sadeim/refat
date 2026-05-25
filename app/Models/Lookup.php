@@ -15,6 +15,8 @@ class Lookup extends Model
     public const TYPE_EXPENSE_CAT  = 'expense_category';
     public const TYPE_INCOME_CAT   = 'income_category';
     public const TYPE_INVOICE_CAT  = 'invoice_category';
+    public const TYPE_WORK_LOC     = 'work_location';
+    public const TYPE_JOB_NATURE   = 'job_nature';
 
     public const TYPE_LABELS = [
         self::TYPE_CUSTOMER    => 'أنواع العملاء',
@@ -22,6 +24,8 @@ class Lookup extends Model
         self::TYPE_EXPENSE_CAT => 'تصنيفات المصروفات',
         self::TYPE_INCOME_CAT  => 'تصنيفات الإيرادات',
         self::TYPE_INVOICE_CAT => 'تصنيفات الفواتير',
+        self::TYPE_WORK_LOC    => 'أماكن العمل',
+        self::TYPE_JOB_NATURE  => 'طبيعة العمل',
     ];
 
     protected $fillable = [
