@@ -105,11 +105,14 @@ class AttendanceForm
             $end   = \Carbon\Carbon::parse($out);
 
             // إذا الخروج في اليوم التالي (وردية ليلية)
-            if ($end->lessThan($start)) {
+            if ($end->lessThanOrEqualTo($start)) {
                 $end->addDay();
             }
 
-            $hours = round($end->floatDiffInHours($start), 2);
+            // حساب مباشر بالطوابع الزمنية — يضمن قيمة موجبة دائماً
+            $seconds = $end->getTimestamp() - $start->getTimestamp();
+            $hours = round(max(0, $seconds / 3600), 2);
+
             $set('hours', $hours);
 
             $rate = (float) ($get('hourly_rate') ?? 0);
