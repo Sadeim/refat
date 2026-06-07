@@ -25,14 +25,19 @@ class TransactionForm
                     ->schema([
                         TextInput::make('reference_no')->label('الرقم المرجعي')->placeholder('سيُولَّد تلقائياً'),
                         Select::make('type')->label('النوع')->options(Transaction::TYPES)->required()->live(),
-                        Select::make('category')->label('التصنيف')
+                        Select::make('category')->label(fn (callable $get) => $get('type') === 'income' ? 'نوع الإيراد' : 'نوع المصروف')
                             ->options(fn (callable $get) => $get('type') === 'income'
                                 ? Lookup::options(Lookup::TYPE_INCOME_CAT)
                                 : Lookup::options(Lookup::TYPE_EXPENSE_CAT))
                             ->searchable()
+                            ->live()
+                            ->required()
+                            ->helperText('💡 لا يوجد التصنيف المطلوب؟ اضغط زر "+ إنشاء" لإضافة تصنيف جديد')
                             ->createOptionForm([
-                                TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
-                                TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                                TextInput::make('label_ar')->label('الاسم بالعربي')->required()
+                                    ->placeholder('مثال: ضيافة، إنترنت، صيانة سيارة...'),
+                                TextInput::make('key')->label('المفتاح (إنجليزي بدون مسافات)')->required()->regex('/^[a-z0-9_]+$/')
+                                    ->placeholder('hospitality / internet / car_maintenance'),
                             ])
                             ->createOptionUsing(function (array $data, callable $get) {
                                 $type = $get('type') === 'income' ? Lookup::TYPE_INCOME_CAT : Lookup::TYPE_EXPENSE_CAT;

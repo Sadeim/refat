@@ -21,12 +21,16 @@ class FixedExpenseForm
                 Section::make('بيانات المصروف الثابت')->columns(2)->schema([
                     TextInput::make('name')->label('اسم المصروف')->required()
                         ->placeholder('مثال: إيجار المكتب، إنترنت، فاتورة كهرباء...'),
-                    Select::make('category')->label('التصنيف')
+                    Select::make('category')->label('نوع المصروف')
                         ->options(fn () => Lookup::options(Lookup::TYPE_EXPENSE_CAT))
                         ->searchable()
+                        ->required()
+                        ->helperText('💡 لا يوجد النوع المطلوب؟ اضغط زر "+ إنشاء" لإضافة نوع جديد')
                         ->createOptionForm([
-                            TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
-                            TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                            TextInput::make('label_ar')->label('الاسم بالعربي')->required()
+                                ->placeholder('مثال: ضيافة، إنترنت، صيانة سيارة...'),
+                            TextInput::make('key')->label('المفتاح (إنجليزي بدون مسافات)')->required()->regex('/^[a-z0-9_]+$/')
+                                ->placeholder('hospitality / internet / car_maintenance'),
                         ])
                         ->createOptionUsing(fn (array $data) => tap($data['key'], fn () => Lookup::create([
                             'type' => Lookup::TYPE_EXPENSE_CAT,
