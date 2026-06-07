@@ -21,9 +21,9 @@ class FixedExpenseResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
-    protected static string|UnitEnum|null $navigationGroup = 'المحاسبة';
+    protected static string|UnitEnum|null $navigationGroup = 'الثوابت';
 
-    protected static ?int $navigationSort = 30;
+    protected static ?int $navigationSort = 10;
 
     public static function getModelLabel(): string { return 'مصروف ثابت'; }
     public static function getPluralModelLabel(): string { return 'المصاريف الثابتة'; }
