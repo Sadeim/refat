@@ -57,6 +57,16 @@ class Customer extends Model implements HasMedia
         return $this->hasMany(CustomerService::class);
     }
 
+    public function representatives(): HasMany
+    {
+        return $this->hasMany(CustomerRepresentative::class);
+    }
+
+    public function primaryRepresentative()
+    {
+        return $this->hasOne(CustomerRepresentative::class)->where('is_primary', true);
+    }
+
     public function custodies(): MorphMany
     {
         return $this->morphMany(Custody::class, 'assigned_to');

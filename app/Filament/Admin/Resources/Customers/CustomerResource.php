@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Customers;
 use App\Filament\Admin\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Admin\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Admin\Resources\Customers\Pages\ListCustomers;
+use App\Filament\Admin\Resources\Customers\RelationManagers\RepresentativesRelationManager;
 use App\Filament\Admin\Resources\Customers\RelationManagers\ServicesRelationManager;
 use App\Filament\Admin\Resources\Customers\Schemas\CustomerForm;
 use App\Filament\Admin\Resources\Customers\Tables\CustomersTable;
@@ -66,6 +67,7 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RepresentativesRelationManager::class,
             ServicesRelationManager::class,
         ];
     }

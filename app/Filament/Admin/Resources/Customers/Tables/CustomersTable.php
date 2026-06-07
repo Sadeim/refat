@@ -25,6 +25,10 @@ class CustomersTable
                 BadgeColumn::make('type')->label('النوع')
                     ->formatStateUsing(fn (?string $state): string => Lookup::label(Lookup::TYPE_CUSTOMER, $state, $state)),
                 TextColumn::make('phone')->label('الهاتف')->searchable(),
+                TextColumn::make('primaryRepresentative.name')->label('الممثل')->toggleable()
+                    ->description(fn ($record) => $record->primaryRepresentative?->position),
+                TextColumn::make('representatives_count')->label('عدد الممثلين')
+                    ->counts('representatives')->badge()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('contract_value')->label('قيمة العقد')->money('ILS')->sortable(),
                 TextColumn::make('contract_end')->label('نهاية العقد')->date()->sortable(),
                 BadgeColumn::make('status')->label('الحالة')
