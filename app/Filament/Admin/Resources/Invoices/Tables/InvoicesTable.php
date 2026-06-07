@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Invoices\Tables;
 
 use App\Models\Invoice;
+use App\Models\Lookup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -22,6 +23,10 @@ class InvoicesTable
             ->columns([
                 TextColumn::make('number')->label('الرقم')->searchable()->sortable(),
                 TextColumn::make('customer.name_ar')->label('العميل')->searchable()->sortable(),
+                TextColumn::make('category')->label('بيان الفاتورة')
+                    ->formatStateUsing(fn (?string $state) => Lookup::label(Lookup::TYPE_INVOICE_CAT, $state, '—'))
+                    ->badge()
+                    ->color('info'),
                 TextColumn::make('issue_date')->label('الإصدار')->date()->sortable(),
                 TextColumn::make('due_date')->label('الاستحقاق')->date()->sortable(),
                 TextColumn::make('total')->label('الإجمالي')->money('ILS')->weight('bold'),
@@ -35,6 +40,8 @@ class InvoicesTable
             ->defaultSort('issue_date', 'desc')
             ->filters([
                 SelectFilter::make('status')->label('الحالة')->options(Invoice::STATUSES),
+                SelectFilter::make('category')->label('بيان الفاتورة')
+                    ->options(fn () => Lookup::options(Lookup::TYPE_INVOICE_CAT)),
                 TrashedFilter::make()->label('المحذوفة'),
             ])
             ->recordActions([EditAction::make()->label('تعديل')])

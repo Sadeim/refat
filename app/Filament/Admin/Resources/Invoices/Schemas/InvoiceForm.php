@@ -24,12 +24,14 @@ class InvoiceForm
                 Select::make('status')->label('الحالة')->options(Invoice::STATUSES)->default('draft')->required(),
                 DatePicker::make('issue_date')->label('تاريخ الإصدار')->native(false)->default(now())->required(),
                 DatePicker::make('due_date')->label('تاريخ الاستحقاق')->native(false)->default(now()->addDays(30)),
-                Select::make('category')->label('تصنيف الفاتورة')
+                Select::make('category')->label('بيان الفاتورة (التصنيف)')
                     ->options(fn () => Lookup::options(Lookup::TYPE_INVOICE_CAT))
                     ->searchable()
+                    ->required()
+                    ->helperText('💡 لا يوجد البيان المطلوب؟ اضغط زر "+ إنشاء" لإضافة بيان جديد')
                     ->createOptionForm([
                         TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
-                        TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                        TextInput::make('key')->label('المفتاح (إنجليزي بدون مسافات)')->required()->regex('/^[a-z0-9_]+$/'),
                     ])
                     ->createOptionUsing(fn (array $data) => tap($data['key'], fn () => Lookup::create([
                         'type' => Lookup::TYPE_INVOICE_CAT,
@@ -37,9 +39,9 @@ class InvoiceForm
                         'label_ar' => $data['label_ar'],
                         'is_active' => true,
                     ]))),
-                Textarea::make('statement')->label('بيان الفاتورة')
+                Textarea::make('statement')->label('تفاصيل البيان (اختياري)')
                     ->rows(2)->columnSpanFull()
-                    ->placeholder('وصف موجز يُطبع على الفاتورة')
+                    ->placeholder('وصف تفصيلي يُطبع تحت "بيان الفاتورة"')
                     ->maxLength(500),
             ]),
 
