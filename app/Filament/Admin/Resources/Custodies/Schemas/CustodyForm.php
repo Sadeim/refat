@@ -28,9 +28,11 @@ class CustodyForm
                             ->options(fn () => Lookup::options(Lookup::TYPE_CUSTODY))
                             ->required()
                             ->searchable()
+                            ->live()
+                            ->helperText('💡 لا يوجد النوع في القائمة؟ اضغط زر "+ إنشاء" لإضافة نوع جديد')
                             ->createOptionForm([
                                 TextInput::make('label_ar')->label('الاسم بالعربي')->required(),
-                                TextInput::make('key')->label('المفتاح (إنجليزي)')->required()->regex('/^[a-z0-9_]+$/'),
+                                TextInput::make('key')->label('المفتاح (إنجليزي بدون مسافات)')->required()->regex('/^[a-z0-9_]+$/'),
                             ])
                             ->createOptionUsing(fn (array $data) => tap($data['key'], fn () => Lookup::create([
                                 'type' => Lookup::TYPE_CUSTODY,
@@ -40,6 +42,14 @@ class CustodyForm
                             ]))),
                         TextInput::make('asset_name')->label('اسم المقتنى / الوصف')->required(),
                         TextInput::make('serial_no')->label('الرقم التسلسلي'),
+                        TextInput::make('license_number')
+                            ->label(fn (callable $get) => $get('asset_type') === 'vehicle' ? 'رقم اللوحة' : 'رقم الرخصة')
+                            ->visible(fn (callable $get) => in_array($get('asset_type'), ['vehicle', 'weapon']))
+                            ->required(fn (callable $get) => in_array($get('asset_type'), ['vehicle', 'weapon'])),
+                        DatePicker::make('license_expiry')
+                            ->label('تاريخ انتهاء الرخصة')
+                            ->native(false)
+                            ->visible(fn (callable $get) => in_array($get('asset_type'), ['vehicle', 'weapon'])),
                         TextInput::make('value')->label('القيمة')->numeric()->prefix('₪')->default(0),
                         Select::make('status')->label('الحالة')
                             ->options([

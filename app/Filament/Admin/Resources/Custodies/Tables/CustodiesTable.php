@@ -26,6 +26,9 @@ class CustodiesTable
                     ->formatStateUsing(fn (?string $state): string => Lookup::label(Lookup::TYPE_CUSTODY, $state, $state)),
                 TextColumn::make('asset_name')->label('الاسم')->searchable(),
                 TextColumn::make('serial_no')->label('الرقم التسلسلي')->searchable()->toggleable(),
+                TextColumn::make('license_number')->label('رقم اللوحة/الرخصة')->searchable()->toggleable(),
+                TextColumn::make('license_expiry')->label('انتهاء الرخصة')->date()->toggleable()
+                    ->color(fn ($state) => $state && \Carbon\Carbon::parse($state)->isPast() ? 'danger' : ($state && \Carbon\Carbon::parse($state)->lessThan(now()->addMonth()) ? 'warning' : null)),
                 TextColumn::make('value')->label('القيمة')->money('ILS')->sortable(),
                 TextColumn::make('assigned_to_type')->label('المسلَّم إليه')
                     ->formatStateUsing(fn (string $state): string => ['employee'=>'موظف','customer'=>'عميل'][$state] ?? $state),
